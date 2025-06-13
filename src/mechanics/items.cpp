@@ -1,12 +1,32 @@
 #include "items.h"
 
-Item::Item(std::string name, float price, const sf::Vector2f &pos, const sf::Vector2f &size, const sf::Texture &texture)
-    : m_name{name}, m_price{price}, m_scanned{false}, m_bagged{false}, m_texture{texture}, m_sprite{texture}
+std::unique_ptr<Item> Item::create_item(const std::string &id, const sf::Texture &tex)
 {
-    m_sprite.setPosition(pos);
+    if (id == "tomato_soup")
+    {
+        return std::make_unique<Item>(ItemConfig{"Tomato Soup", 2.5f, {160.f, 600.f}, {128.f, 256.f}, tex});
+    }
+    else if (id == "appletron")
+    {
+        return std::make_unique<Item>(ItemConfig{"Appletron", 17.0f, {180.f, 600.f}, {256.f, 256.f}, tex});
+    }
+
+    throw std::invalid_argument("Unknown item type: " + id);
+}
+
+Item::Item(const ItemConfig &config)
+    : m_name{config.name},
+      m_price{config.price},
+      m_scanned{false},
+      m_bagged{false},
+      m_texture{config.texture},
+      m_sprite{config.texture}
+
+{
+    m_sprite.setPosition(config.position);
     const auto bounds = m_sprite.getLocalBounds();
     if (bounds.size.x > 0 && bounds.size.y > 0)
-        m_sprite.setScale(sf::Vector2f{size.x / bounds.size.x, size.y / bounds.size.y});
+        m_sprite.setScale(sf::Vector2f{config.size.x / bounds.size.x, config.size.y / bounds.size.y});
 }
 
 std::string Item::get_name() const { return m_name; }
@@ -41,9 +61,3 @@ void Item::draw(sf::RenderTarget &target, sf::RenderStates states) const
     states.transform *= getTransform();
     target.draw(m_sprite, states);
 }
-
-TomatoSoupCan::TomatoSoupCan(const sf::Texture &tex)
-    : Item("Can of Tomato Soup", 2.5f, {160.f, 600.f}, {128.f, 256.f}, tex) {}
-
-Appletron::Appletron(const sf::Texture &tex)
-    : Item("APPLETRON 3000", 17.0f, {180.f, 600.f}, {256.f, 256.f}, tex) {}

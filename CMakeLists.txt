@@ -15,5 +15,6 @@ FetchContent_MakeAvailable(SFML)
 file(GLOB SRC_FILES CONFIGURE_DEPENDS src/mechanics/*.cpp src/dialogue/*.cpp src/*.cpp)
 
 add_executable(main ${SRC_FILES})
+target_include_directories(main PRIVATE ${PROJECT_SOURCE_DIR}/external)
 target_compile_features(main PRIVATE cxx_std_17)
 target_link_libraries(main PRIVATE SFML::Graphics)

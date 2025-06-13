@@ -2,95 +2,80 @@
 
 #include <SFML/Graphics.hpp>
 #include <sstream>
+#include <memory>
+#include <vector>
+#include <array>
 #include "../mechanics/areas.h"
+#include "nodes.h"
+
+class DialogueTree
+{
+public:
+    DialogueTree(std::shared_ptr<Node> start)
+        : m_start(start), m_current(m_start.get()) {}
+
+    Node &get_start() { return *m_start; }
+    NodeType get_curr_node_type() { return m_current->get_node_type(); }
+    void choose(size_t i)
+    {
+        m_current->select_option(i);
+        next();
+    }
+
+    void next()
+    {
+        if (m_current->has_next())
+        {
+            auto &next = m_current->get_next();
+            if (next.get_node_type() == NodeType::Options)
+            {
+                auto options_node = dynamic_cast<OptionsNode *>(&(m_current->get_next()));
+                if (options_node->all_visited())
+                {
+                    m_current = &(options_node->get_else());
+                    return;
+                }
+            }
+
+            m_current = &m_current->get_next();
+        }
+    }
+
+    Node &get_curr_node() { return *m_current; }
+
+    static DialogueTree parse_json_to_tree(const std::string &filename);
+
+    template <typename T, typename... Args>
+    static DialogueTree make_tree(Args &&...args)
+    {
+        return DialogueTree(std::make_unique<T>(std::forward<Args>(args)...));
+    }
+
+private:
+    std::shared_ptr<Node> m_start;
+    Node *m_current;
+};
 
 class DialogueArea : public Area
 {
 public:
-    DialogueArea(sf::FloatRect bounds, sf::FloatRect text_area, sf::FloatRect options_area, sf::Font &font);
+    DialogueArea(sf::FloatRect bounds, sf::FloatRect text_area, sf::Font &font);
     void on_left_click(sf::RenderWindow &window) override;
     void on_left_release(sf::RenderWindow &window) override;
     void update(sf::RenderWindow &window) override;
     void draw(sf::RenderTarget &window);
     std::string wrapText(const std::string &input, unsigned int charSize, float maxWidth);
 
+    void set_tree(std::unique_ptr<DialogueTree> tree);
+    DialogueTree &get_tree() { return *m_tree; };
+    void set_text_to_node(Node &node);
+
 private:
     sf::FloatRect m_text_area;
-    sf::FloatRect m_options_area;
+    sf::RectangleShape m_textbox;
+    sf::Text m_title_obj;
+    sf::Text m_text_obj;
+    std::vector<sf::Text> m_options_objs;
     sf::Font &m_font;
-};
-
-class DialogueTree
-{
-public:
-    DialogueTree(std::unique_ptr<Node> start);
-    Node &get_start();
-
-    template <typename T, typename... Args>
-    DialogueTree make_tree(Args &&...args)
-    {
-        return DialogueTree(std::make_unique<T>(std::forward<Args>(args)...));
-    };
-
-private:
-    std::unique_ptr<Node> m_start;
-    Node &m_current;
-};
-
-class Node
-{
-public:
-    Node(std::string text, std::string name);
-    virtual std::string get_text() = 0;
-    virtual std::string get_name() = 0;
-    virtual Node &get_next();
-
-protected:
-    std::string m_text;
-    std::string m_name;
-    std::unique_ptr<Node> m_next;
-};
-
-class ExpositionNode : public Node
-{
-public:
-    std::string get_text() override;
-    Node &get_next() override;
-};
-
-class SpeechNode : public Node
-{
-public:
-    std::string get_text() override;
-    Node &get_next() override;
-};
-
-template <size_t N>
-class OptionsNode : public Node
-{
-public:
-    OptionsNode(std::string text,
-                const std::array<std::string, N> &options_texts,
-                std::array<std::unique_ptr<Node>, N> options_ptrs);
-
-    std::string get_text() override
-    {
-        std::stringstream ss;
-        ss << m_text << "\n";
-
-        for (size_t i = 0; i < m_options_texts.size(); ++i)
-        {
-            ss << m_options_texts[i] << "\n";
-        }
-
-        return ss.str();
-    }
-
-    void select_option(size_t i);
-    Node &get_next() override;
-
-private:
-    std::array<bool, N> m_visited;
-    std::array<std::string, N> m_options_texts;
-    std::array<std::unique_ptr<Node>, N> m_options_ptrs;
+    std::unique_ptr<DialogueTree> m_tree;
 };

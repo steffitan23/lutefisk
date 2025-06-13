@@ -31,15 +31,12 @@ void Scanner::update_animation()
 
         if (m_frame_index >= TOTAL_FRAMES)
         {
-            std::cout << "Animation done!\n";
             m_animating = false;
             m_frame_index = 0;
             return;
         }
 
         m_sprite.setTextureRect(sf::IntRect{{m_frame_index * FRAME_WIDTH, 0}, {FRAME_WIDTH, FRAME_HEIGHT}});
-        std::cout << "Next frame at " << m_frame_index * FRAME_WIDTH << std::endl;
-
         m_clock.restart();
     }
 }

@@ -1,0 +1,104 @@
+{
+  "nodes": {
+    "start": {
+      "type": "speech",
+      "title": "Bob",
+      "text": "So uh… welcome to Lutefisk, man… and hope you enjoy the job… It's pretty chill, man…",
+      "next": "tentative"
+    },
+    "tentative": {
+      "type": "exposition",
+      "text": "He pauses and looks around tentatively.",
+      "next": "surprised"
+    },
+    "surprised": {
+      "type": "speech",
+      "title": "Bob",
+      "text": "I was kinda surprised you still moved here, 'specially with all that's happened.",
+      "next": "why_move"
+    },
+    "why_move": {
+      "type": "options",
+      "title": "Respond:",
+      "options_text": [
+        "What do you mean?",
+        "This was the only job I could get."
+      ],
+      "options_next": ["what_mean", "only_job"]
+    },
+    "what_mean": {
+      "type": "speech",
+      "title": "Bob",
+      "text": "Oh… You don't know… Damn, man. They found a body in the river. Tough stuff, man…",
+      "next": "ask_questions"
+    },
+    "only_job": {
+      "type": "speech",
+      "title": "Bob",
+      "text": "Ah well, the economy these days, man… When things got hard here at the store, I used to go out to the river to think… Clear my head and all that.",
+      "next": "spot"
+    },
+    "spot": {
+      "type": "speech",
+      "title": "Bob",
+      "text": "Can't believe what they did to my spot, man…",
+      "next": "ask_questions"
+    },
+    "ask_questions": {
+      "type": "options",
+      "title": "You",
+      "options_text": [
+        "Do they know who it is?",
+        "Where is the river?",
+        "When did they find it?"
+      ],
+      "options_next": ["who_is_it", "where_river", "when_found"],
+      "options_else": "check_out"
+    },
+    "who_is_it": {
+      "type": "speech",
+      "title": "Bob",
+      "text": "It was Mrs Holloway, she taught English at the high school. I didn't have her as my teacher, but I heard she was pretty strict, man…",
+      "next": "ask_questions"
+    },
+    "where_river": {
+      "type": "speech",
+      "title": "Bob",
+      "text": "Uh… I guess you don't know where that is yet.",
+      "next": "map"
+    },
+    "map": {
+      "type": "exposition",
+      "text": "He reaches behind the store counter and pulls out a map.",
+      "next": "welcome_gift"
+    },
+    "welcome_gift": {
+      "type": "speech",
+      "title": "Bob",
+      "text": "Here, it's my welcome gift, man. It happened right behind the abandoned lumber mill.",
+      "next": "ask_questions"
+    },
+    "when_found": {
+      "type": "speech",
+      "title": "Bob",
+      "text": "Hmm, I'm not sure, man… Maybe on Saturday? or Sunday… Definitely over the weekend, man.",
+      "next": "ask_questions"
+    },
+    "check_out": {
+      "type": "speech",
+      "title": "Bob",
+      "text": "Oh yeah, could you check these out for me?",
+      "next": "tulips"
+    },
+    "tulips": {
+      "type": "exposition",
+      "text": "He hands you a bouquet of tulips. You hear his phone buzzing in his pocket; he looks down at it.",
+      "next": "exit"
+    },
+    "exit": {
+      "type": "speech",
+      "title": "Bob",
+      "text": "Thanks, man… Anyways, I gotta go check some stuff out in the backroom. See you around, man…"
+    }
+  }
+}

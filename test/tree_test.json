@@ -1,0 +1,30 @@
+{
+  "nodes": {
+    "start": {
+      "type": "exposition",
+      "text": "u r in a cool room",
+      "next": "room"
+    },
+    "room": {
+      "type": "speech",
+      "title": "mr charlie",
+      "text": "hello i am charlie",
+      "next": "kill"
+    },
+    "kill": {
+      "type": "options",
+      "text": "boob",
+      "title": "how do u escape?",
+      "options_text": ["poop n make it stinky", "run away fast away"],
+      "options_next": ["poop", "run"]
+    },
+    "poop": {
+      "type": "exposition",
+      "text": "u pooped! and u defeated mr charlie with the stink bomb"
+    },
+    "run": {
+      "type": "exposition",
+      "text": "u ran away fast! but u tripped on someone's poop on the ground and mr charlie killed u!!!"
+    }
+  }
+}

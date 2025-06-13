@@ -2,21 +2,32 @@
 
 #include <SFML/Graphics.hpp>
 
+struct ItemConfig
+{
+    std::string name;
+    float price;
+    sf::Vector2f position;
+    sf::Vector2f size;
+    const sf::Texture &texture;
+};
+
 class Item : public sf::Drawable, public sf::Transformable
 {
 public:
-    Item(std::string name, float price, const sf::Vector2f &pos, const sf::Vector2f &size, const sf::Texture &texture);
+    Item(const ItemConfig &config);
 
+    virtual ~Item() = default;
     std::string get_name() const;
     float get_price() const;
     void set_pos(const sf::Vector2f &vec);
     void set_pos(float x, float y);
     sf::Vector2f get_pos() const;
     bool get_scanned() const;
-    void scan();
+    virtual void scan();
     void bag();
     sf::FloatRect get_bounds() const;
     sf::Vector2f get_center() const;
+    static std::unique_ptr<Item> create_item(const std::string &id, const sf::Texture &texture);
 
 protected:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
@@ -28,16 +39,4 @@ private:
     const sf::Texture &m_texture;
     sf::Sprite m_sprite;
     std::string m_name;
-};
-
-class TomatoSoupCan : public Item
-{
-public:
-    TomatoSoupCan(const sf::Texture &tex);
-};
-
-class Appletron : public Item
-{
-public:
-    Appletron(const sf::Texture &tex);
 };

@@ -25,13 +25,17 @@ int main()
 
     std::vector<std::unique_ptr<Item>> items;
 
-    items.emplace_back(std::make_unique<Item>(TomatoSoupCan{TOMATO_SOUP_CAN}));
-    items.emplace_back(std::make_unique<Item>(Appletron{APPLETRON}));
+    items.emplace_back(Item::create_item("tomato_soup", TOMATO_SOUP_CAN));
+    items.emplace_back(Item::create_item("appletron", APPLETRON));
 
     DraggableArea<Item> draggable_area{sf::FloatRect{{0, 0}, {1710, 956}}, items};
     BaggingArea bagging_area{sf::FloatRect{{1400, 512}, {512, 512}}, items, font};
 
-    DialogueArea dialogue_area{sf::FloatRect{{0, 0}, {512, 512}}, sf::FloatRect({20, 20}, {512, 300}), sf::FloatRect({400, 400}, {512, 400}), font};
+    DialogueArea dialogue_area{sf::FloatRect{{20, 400}, {600, 140}}, sf::FloatRect({20, 400}, {600, 140}), font};
+
+    auto d_tree = DialogueTree::parse_json_to_tree("test/bob_test.json");
+    dialogue_area.set_tree(std::make_unique<DialogueTree>(d_tree));
+    dialogue_area.set_text_to_node((dialogue_area.get_tree()).get_start());
 
     Screen screen_display{sf::FloatRect{{900, 150}, {512, 512}}, font};
     Scanner scanner{SCAN_BUDDY};
@@ -54,6 +58,9 @@ int main()
 
                     if (draggable_area.contains(mousePos))
                         draggable_area.on_left_click(window);
+
+                    if (dialogue_area.contains(mousePos))
+                        dialogue_area.on_left_click(window);
                 }
             }
 
@@ -86,7 +93,7 @@ int main()
         draggable_area.update(window);
         bagging_area.update(window);
 
-        // dialogue_area.update(window);
+        dialogue_area.update(window);
 
         sf::Sprite screen{SCREEN};
         screen.setPosition(sf::Vector2f{760, 0});
@@ -105,7 +112,7 @@ int main()
 
         sf::Sprite bob{BOB};
         bob.setScale(sf::Vector2f{0.8f, 0.8f});
-        bob.setPosition(sf::Vector2f{70, 132});
+        bob.setPosition(sf::Vector2f{70, 20});
 
         window.clear();
         window.draw(bg);
