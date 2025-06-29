@@ -10,9 +10,9 @@ public:
     Area(const sf::FloatRect &rect) : m_bounds(rect) {}
     virtual ~Area() = default;
 
-    virtual void on_left_click(sf::RenderWindow &window) = 0;
-    virtual void on_left_release(sf::RenderWindow &window) = 0;
-    virtual void update(sf::RenderWindow &window) = 0;
+    virtual void on_left_click(const sf::RenderWindow &window) = 0;
+    virtual void on_left_release(const sf::RenderWindow &window) = 0;
+    virtual void update(const sf::RenderWindow &window) = 0;
 
     bool contains(const sf::Vector2f &point) const
     {
@@ -41,8 +41,8 @@ public:
         m_action_text.setFillColor(sf::Color::White);
     }
 
-    void on_left_click(sf::RenderWindow &window) override {};
-    void on_left_release(sf::RenderWindow &window) override {};
+    void on_left_click(const sf::RenderWindow &window) override {};
+    void on_left_release(const sf::RenderWindow &window) override {};
 
     void draw(sf::RenderTarget &window)
     {
@@ -54,7 +54,7 @@ public:
         }
     }
 
-    void update(sf::RenderWindow &window) override
+    void update(const sf::RenderWindow &window) override
     {
         const sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 
@@ -88,7 +88,7 @@ public:
     DraggableArea(const sf::FloatRect &bounds, std::vector<std::unique_ptr<T>> &draggables)
         : Area(bounds), m_draggables(draggables) {}
 
-    void on_left_click(sf::RenderWindow &window) override
+    void on_left_click(const sf::RenderWindow &window) override
     {
         const sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 
@@ -105,13 +105,13 @@ public:
     }
 
     void
-    on_left_release(sf::RenderWindow &window) override
+    on_left_release(const sf::RenderWindow &window) override
     {
         m_curr_drag_index.reset();
         m_offset = sf::Vector2f(); // needed?
     }
 
-    void update(sf::RenderWindow &window) override
+    void update(const sf::RenderWindow &window) override
     {
         if (m_curr_drag_index.has_value())
         {

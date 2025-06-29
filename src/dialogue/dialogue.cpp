@@ -124,7 +124,7 @@ std::string DialogueArea::wrapText(const std::string &input, unsigned int charSi
 
     return result;
 }
-void DialogueArea::on_left_click(sf::RenderWindow &window)
+void DialogueArea::on_left_click(const sf::RenderWindow &window)
 {
     const auto node_type = m_tree->get_curr_node_type();
     if (node_type == NodeType::Options)
@@ -149,8 +149,8 @@ void DialogueArea::on_left_click(sf::RenderWindow &window)
     set_text_to_node(m_tree->get_curr_node());
 }
 
-void DialogueArea::on_left_release(sf::RenderWindow &) {}
-void DialogueArea::update(sf::RenderWindow &) {}
+void DialogueArea::on_left_release(const sf::RenderWindow &) {}
+void DialogueArea::update(const sf::RenderWindow &) {}
 
 void DialogueArea::set_tree(std::unique_ptr<DialogueTree> tree)
 {

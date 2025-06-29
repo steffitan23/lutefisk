@@ -12,7 +12,7 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-file(GLOB SRC_FILES CONFIGURE_DEPENDS src/mechanics/*.cpp src/dialogue/*.cpp src/*.cpp)
+file(GLOB SRC_FILES CONFIGURE_DEPENDS src/*.cpp src/mechanics/*.cpp src/dialogue/*.cpp src/scene/*.cpp src/assets/*.cpp)
 
 add_executable(main ${SRC_FILES})
 target_include_directories(main PRIVATE ${PROJECT_SOURCE_DIR}/external)

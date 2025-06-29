@@ -18,16 +18,20 @@ DialogueTree DialogueTree::parse_json_to_tree(const std::string &filename)
 
     for (const auto &[node_name, node_content] : node_data.items())
     {
-        const auto &node_type = node_content["type"].get<std::string>();
+        const auto node_type = node_content["type"].get<std::string>();
 
         if (node_type == "exposition")
         {
-            const auto &node_text = node_content["text"].get<std::string>();
+            const auto node_text = node_content["text"].get<std::string>();
             factory.create_node<ExpositionNode>(node_name, node_text);
+
+            if (node_content.contains("give_item"))
+            {
+            }
         }
         else if (node_type == "speech")
         {
-            const auto &node_text = node_content["text"].get<std::string>();
+            const auto node_text = node_content["text"].get<std::string>();
             factory.create_node<SpeechNode>(node_name, node_text, node_content["title"].get<std::string>());
         }
         else if (node_type == "options")
@@ -73,7 +77,7 @@ DialogueTree DialogueTree::parse_json_to_tree(const std::string &filename)
 
             if (node_content.contains("options_else"))
             {
-                const auto &options_else = node_content["options_else"].get<std::string>();
+                const auto options_else = node_content["options_else"].get<std::string>();
                 options_node->set_else(factory.get_node(options_else));
             }
         }

@@ -1,6 +1,7 @@
 #pragma once
 #include "dialogue.h"
 #include <stdexcept>
+#include "../mechanics/items.h"
 
 enum class NodeType
 {

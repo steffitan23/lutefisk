@@ -60,9 +60,9 @@ class DialogueArea : public Area
 {
 public:
     DialogueArea(sf::FloatRect bounds, sf::FloatRect text_area, sf::Font &font);
-    void on_left_click(sf::RenderWindow &window) override;
-    void on_left_release(sf::RenderWindow &window) override;
-    void update(sf::RenderWindow &window) override;
+    void on_left_click(const sf::RenderWindow &window) override;
+    void on_left_release(const sf::RenderWindow &window) override;
+    void update(const sf::RenderWindow &window) override;
     void draw(sf::RenderTarget &window);
     std::string wrapText(const std::string &input, unsigned int charSize, float maxWidth);
 
