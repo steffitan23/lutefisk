@@ -156,3 +156,11 @@ void DialogueArea::set_tree(std::unique_ptr<DialogueTree> tree)
 {
     m_tree = std::move(tree);
 }
+
+void DialogueArea::set_add_item_callback(std::function<void(std::shared_ptr<Item>)> callback)
+{
+    if (m_tree)
+    {
+        m_tree->set_add_item_callback(callback);
+    }
+}

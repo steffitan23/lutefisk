@@ -19,15 +19,49 @@ DialogueTree DialogueTree::parse_json_to_tree(const std::string &filename)
     for (const auto &[node_name, node_content] : node_data.items())
     {
         const auto node_type = node_content["type"].get<std::string>();
+        std::vector<std::shared_ptr<Item>> node_items{};
 
         if (node_type == "exposition")
         {
             const auto node_text = node_content["text"].get<std::string>();
-            factory.create_node<ExpositionNode>(node_name, node_text);
 
             if (node_content.contains("give_item"))
             {
+                const auto &items_json = node_content["give_item"];
+                std::vector<std::shared_ptr<Item>> items;
+
+                for (const auto &item_json : items_json)
+                {
+                    std::string name = item_json["name"];
+                    std::string asset = item_json["asset"];
+                    bool draggable = item_json["draggable"];
+                    bool baggable = item_json["baggable"];
+                    bool scannable = item_json["scannable"];
+
+                    if (scannable)
+                    {
+                        float price = item_json["price"];
+                        node_items.push_back(std::make_shared<Item>(ScannableItem{name,
+                                                                                  {180.f, 600.f},
+                                                                                  {256.f, 256.f},
+                                                                                  AssetManager::get().get_texture(asset),
+                                                                                  price,
+                                                                                  draggable,
+                                                                                  baggable}));
+                    }
+                    else
+                    {
+                        node_items.push_back(std::make_shared<Item>(UnscannableItem{name,
+                                                                                    {180.f, 600.f},
+                                                                                    {256.f, 256.f},
+                                                                                    AssetManager::get().get_texture(asset),
+                                                                                    draggable,
+                                                                                    baggable}));
+                    }
+                }
             }
+
+            factory.create_node<ExpositionNode>(node_name, node_text, node_items);
         }
         else if (node_type == "speech")
         {

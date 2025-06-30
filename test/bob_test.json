@@ -71,11 +71,15 @@
       "type": "exposition",
       "text": "He reaches behind the store counter and pulls out a map.",
       "next": "welcome_gift",
-      "give_item": {
-        "name": "Map of Lutefisk",
-        "asset": "appletron.png",
-        "scannable": false
-      }
+      "give_item": [
+        {
+          "name": "Map of Lutefisk",
+          "asset": "assets/appletron.png",
+          "draggable": true,
+          "baggable": false,
+          "scannable": false
+        }
+      ]
     },
     "welcome_gift": {
       "type": "speech",

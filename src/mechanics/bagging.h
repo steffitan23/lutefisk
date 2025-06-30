@@ -8,6 +8,6 @@ class BaggingArea : public SubmittableArea<Item>
 {
 public:
     BaggingArea(const sf::FloatRect &bounds,
-                std::vector<std::unique_ptr<Item>> &submittables, const sf::Font &font);
+                std::vector<std::shared_ptr<Item>> &submittables, const sf::Font &font);
     void submit() override;
 };

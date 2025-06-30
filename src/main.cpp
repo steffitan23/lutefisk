@@ -15,22 +15,10 @@ int main()
     window.setFramerateLimit(144);
 
     SceneManager sm;
-    sm.register_scene("day1_bob", std::make_unique<CounterScene>());
+    auto scene = std::make_unique<CounterScene>();
+    scene->set_dialogue("test/bob_test.json"); // callback registered on correct instance
+    sm.register_scene("day1_bob", std::move(scene));
     sm.switch_to("day1_bob");
-
-    // std::vector<std::unique_ptr<Item>> items;
-
-    // DraggableArea<Item> draggable_area{sf::FloatRect{{0, 0}, {1710, 956}}, items};
-    // BaggingArea bagging_area{sf::FloatRect{{1400, 512}, {512, 512}}, items, font};
-
-    // DialogueArea dialogue_area{sf::FloatRect{{20, 400}, {600, 140}}, sf::FloatRect({20, 400}, {600, 140}), font};
-
-    // auto d_tree = DialogueTree::parse_json_to_tree("test/bob_test.json");
-    // dialogue_area.set_tree(std::make_unique<DialogueTree>(d_tree));
-    // dialogue_area.set_text_to_node((dialogue_area.get_tree()).get_start());
-
-    // Screen screen_display{sf::FloatRect{{900, 150}, {512, 512}}, font};
-    // Scanner scanner{SCAN_BUDDY};
 
     while (window.isOpen())
     {
@@ -44,16 +32,7 @@ int main()
             sm.handle_event(event.value(), window);
         }
 
-        // for (auto &item : items)
-        // {
-        //     if (scanner.contains(*item) && !(*item).get_scanned())
-        //     {
-        //         scanner.scan(*item);
-        //         screen_display.add(*item);
-        //         break;
-        //     }
-        // }
-        sm.render(window);
         sm.update(window);
+        sm.render(window);
     }
 }

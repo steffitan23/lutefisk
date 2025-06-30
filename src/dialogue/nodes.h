@@ -62,8 +62,20 @@ private:
 class ExpositionNode : public Node
 {
 public:
-    ExpositionNode(std::string text) : Node(text, "") {}
+    ExpositionNode(std::string text, std::vector<std::shared_ptr<Item>> items) : Node(text, ""), m_has_items{!items.empty()}, m_items{std::move(items)} {}
     NodeType get_node_type() const override { return NodeType::Exposition; }
+    bool has_items() { return m_has_items; }
+    std::vector<std::shared_ptr<Item>> get_items() { return m_items; }
+
+    template <typename... Items>
+    void set_items(Items &&...items)
+    {
+        m_items = {std::make_shared<Item>(std::forward<Items>(items))...};
+    }
+
+private:
+    bool m_has_items;
+    std::vector<std::shared_ptr<Item>> m_items;
 };
 
 class SpeechNode : public Node

@@ -9,7 +9,6 @@ AssetManager &AssetManager::get()
 
 sf::Texture &AssetManager::get_texture(const std::string &filename)
 {
-    std::cout << filename << std::endl;
     auto &map = m_textures;
     if (map.find(filename) == map.end())
     {

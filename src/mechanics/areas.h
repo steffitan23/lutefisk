@@ -29,7 +29,7 @@ class SubmittableArea : public Area
 public:
     SubmittableArea(
         const sf::FloatRect &bounds,
-        std::vector<std::unique_ptr<T>> &submittables,
+        std::vector<std::shared_ptr<T>> &submittables,
         const std::string &action_text,
         const sf::Font &action_font)
         : Area(bounds),
@@ -75,9 +75,14 @@ public:
 
     virtual void submit() = 0;
 
+    void set_submittables(std::vector<std::shared_ptr<T>> &submittables)
+    {
+        m_submittables = submittables;
+    }
+
 protected:
     sf::Text m_action_text;
-    std::vector<std::unique_ptr<T>> &m_submittables;
+    std::vector<std::shared_ptr<T>> &m_submittables;
     std::optional<size_t> m_curr_submit_index;
 };
 
@@ -85,7 +90,7 @@ template <typename T>
 class DraggableArea : public Area
 {
 public:
-    DraggableArea(const sf::FloatRect &bounds, std::vector<std::unique_ptr<T>> &draggables)
+    DraggableArea(const sf::FloatRect &bounds, std::vector<std::shared_ptr<T>> &draggables)
         : Area(bounds), m_draggables(draggables) {}
 
     void on_left_click(const sf::RenderWindow &window) override
@@ -138,8 +143,13 @@ public:
         }
     }
 
+    void set_draggables(std::vector<std::shared_ptr<T>> &draggables)
+    {
+        m_draggables = draggables;
+    }
+
 private:
-    std::vector<std::unique_ptr<T>> &m_draggables;
+    std::vector<std::shared_ptr<T>> &m_draggables;
     std::optional<size_t> m_curr_drag_index;
     sf::Vector2f m_offset;
 };

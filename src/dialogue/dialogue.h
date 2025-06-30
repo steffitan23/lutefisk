@@ -22,6 +22,11 @@ public:
         next();
     }
 
+    void set_add_item_callback(std::function<void(std::shared_ptr<Item>)> callback)
+    {
+        m_add_item_callback = std::move(callback);
+    }
+
     void next()
     {
         if (m_current->has_next())
@@ -37,6 +42,21 @@ public:
                 }
             }
 
+            if (next.get_node_type() == NodeType::Exposition)
+            {
+                auto expo_node = dynamic_cast<ExpositionNode *>(&(m_current->get_next()));
+                if (expo_node->has_items())
+                {
+                    if (m_add_item_callback)
+                    {
+                        for (const auto &item : expo_node->get_items())
+                        {
+                            std::cout << "gotten items" << std::endl;
+                            m_add_item_callback(item);
+                        }
+                    }
+                }
+            }
             m_current = &m_current->get_next();
         }
     }
@@ -54,6 +74,7 @@ public:
 private:
     std::shared_ptr<Node> m_start;
     Node *m_current;
+    std::function<void(std::shared_ptr<Item>)> m_add_item_callback;
 };
 
 class DialogueArea : public Area
@@ -69,6 +90,7 @@ public:
     void set_tree(std::unique_ptr<DialogueTree> tree);
     DialogueTree &get_tree() { return *m_tree; };
     void set_text_to_node(Node &node);
+    void set_add_item_callback(std::function<void(std::shared_ptr<Item>)> callback);
 
 private:
     sf::FloatRect m_text_area;

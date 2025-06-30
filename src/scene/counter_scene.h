@@ -9,32 +9,29 @@
 #include "../assets/asset_manager.h"
 
 // TODO: Change to singleton
-std::string TOMATO_SOUP_CAN("assets/tomato_soup_can.png");
 std::string SCREEN("assets/screen.png");
 std::string BASKET("assets/basket.png");
 std::string BG("assets/background.png");
 std::string BOB("assets/bob.png");
 std::string TERMINAL("assets/terminal.png");
-std::string APPLETRON("assets/appletron.png");
 std::string SCAN_BUDDY("assets/scan_buddy.png");
 std::string FONT{"assets/fonts/Chewy-Regular.ttf"};
 
-std::vector<std::unique_ptr<Item>> starting_items = {};
+std::vector<std::shared_ptr<Item>> null_items = {};
 
 class CounterScene : public Scene
 {
 public:
-    CounterScene()
-        : m_draggable_area{sf::FloatRect{{0, 0}, {1710, 956}},
-                           starting_items},
-          m_bagging_area{sf::FloatRect{{1400, 512}, {512, 512}},
-                         starting_items, AssetManager::get().get_font(FONT)},
-          m_dialogue_area{sf::FloatRect{{20, 400}, {600, 140}},
-                          sf::FloatRect({20, 400}, {600, 140}),
-                          AssetManager::get().get_font(FONT)},
-          m_scanner{Scanner{AssetManager::get().get_texture(SCAN_BUDDY)}}
-    {
-    }
+    // static CounterScene create(std::vector<std::shared_ptr<Item>> baggables,
+    //                            std::vector<std::shared_ptr<Item>> draggables,
+    //                            const std::string &dialogue_filename)
+    // {
+    //     CounterScene counter{};
+    //     counter.set_draggables(std::move(draggables));
+    //     counter.set_baggables(std::move(baggables));
+    //     counter.set_dialogue(dialogue_filename);
+    //     return counter;
+    // }
 
     void
     handle_event(const sf::Event &event, const sf::RenderWindow &window) override
@@ -49,10 +46,8 @@ public:
                 if (m_draggable_area.contains(mousePos))
                     m_draggable_area.on_left_click(window);
 
-                // if (m_dialogue_area.contains(mousePos))
-                //     std::cout << "dia" << std::endl;
-
-                // m_dialogue_area.on_left_click(window);
+                if (m_dialogue_area.contains(mousePos))
+                    m_dialogue_area.on_left_click(window);
             }
         }
 
@@ -77,6 +72,17 @@ public:
         m_draggable_area.update(window);
         m_bagging_area.update(window);
         m_dialogue_area.update(window);
+
+        for (auto &item : m_items)
+        {
+            if ((*item).is_visible() && m_scanner.contains(*item) && !(*item).get_scanned())
+            {
+                m_scanner.scan(*item);
+                // screen_display.add(*item);
+                break;
+            }
+        }
+
         m_scanner.update_animation();
     }
 
@@ -109,10 +115,11 @@ public:
         window.draw(basket);
 
         window.draw(m_scanner);
-        // for (auto &item_ptr : items)
-        // {
-        //     window.draw(*item_ptr);
-        // }
+        for (auto &item : m_items)
+        {
+            if ((*item).is_visible())
+                window.draw(*item);
+        }
 
         m_bagging_area.draw(window);
         // window.draw(screen_display);
@@ -120,9 +127,50 @@ public:
         window.display();
     }
 
+    void set_dialogue(const std::string &dialogue_filename)
+    {
+        auto tree = DialogueTree::parse_json_to_tree(dialogue_filename);
+        m_dialogue_area.set_tree(std::make_unique<DialogueTree>(tree));
+        m_dialogue_area.set_text_to_node(tree.get_start());
+        m_dialogue_area.set_add_item_callback([this](std::shared_ptr<Item> item)
+                                              { this->add_item(item); });
+    }
+
+    void add_item(std::shared_ptr<Item> shared_item)
+    {
+        m_items.push_back(shared_item);
+        std::cout << "added" << (*shared_item).get_name() << std::endl;
+        if ((*shared_item).can_drag())
+        {
+            m_draggables.push_back(shared_item);
+            m_draggable_area.set_draggables(m_draggables);
+        }
+        if ((*shared_item).can_bag())
+        {
+            m_baggables.push_back(shared_item);
+            m_bagging_area.set_submittables(m_baggables);
+        }
+    }
+
+    CounterScene()
+        : m_draggable_area{sf::FloatRect{{0, 0}, {1710, 956}},
+                           null_items},
+          m_bagging_area{sf::FloatRect{{1400, 512}, {512, 512}},
+                         null_items, AssetManager::get().get_font(FONT)},
+          m_dialogue_area{sf::FloatRect{{20, 400}, {600, 140}},
+                          sf::FloatRect({20, 400}, {600, 140}),
+                          AssetManager::get().get_font(FONT)},
+          m_scanner{Scanner{AssetManager::get().get_texture(SCAN_BUDDY)}}
+    {
+    }
+
 private:
     DraggableArea<Item> m_draggable_area;
     DialogueArea m_dialogue_area;
     BaggingArea m_bagging_area;
     Scanner m_scanner;
+
+    std::vector<std::shared_ptr<Item>> m_items;
+    std::vector<std::shared_ptr<Item>> m_baggables;
+    std::vector<std::shared_ptr<Item>> m_draggables;
 };
